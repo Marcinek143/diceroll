@@ -15,7 +15,7 @@ type SceneProps = {
   plan: ThrowPlan | null;
   onPhase: (phase: RollPhase) => void;
   onComplete: (values: DieValue[]) => void;
-  onImpact: (intensity: number) => void;
+  onImpact: (intensity: number, x: number, motion: number) => void;
 };
 
 const FIXED_STEP = PHYSICS.fixedStep;
@@ -58,7 +58,7 @@ function Tray() {
 function PhysicalDie({ die, register, onImpact, onFirstImpact }: {
   die: ThrowDie;
   register?: (id: number, body: RapierRigidBody | null) => void;
-  onImpact?: (intensity: number) => void;
+  onImpact?: (intensity: number, x: number, motion: number) => void;
   onFirstImpact?: () => void;
 }) {
   const body = useRef<RapierRigidBody>(null);
@@ -85,7 +85,15 @@ function PhysicalDie({ die, register, onImpact, onFirstImpact }: {
     canSleep
     ccd
     onCollisionEnter={onFirstImpact}
-    onContactForce={onImpact ? (event) => onImpact(event.maxForceMagnitude) : undefined}
+    onContactForce={onImpact ? (event) => {
+      const instance = body.current;
+      const linear = instance?.linvel();
+      const angular = instance?.angvel();
+      const other = event.other.rigidBody?.linvel();
+      const linearMotion = linear ? Math.hypot(linear.x - (other?.x ?? 0), linear.y - (other?.y ?? 0), linear.z - (other?.z ?? 0)) : 0;
+      const angularMotion = angular ? Math.hypot(angular.x, angular.y, angular.z) * .35 : 0;
+      onImpact(event.maxForceMagnitude, instance?.translation().x ?? 0, linearMotion + angularMotion);
+    } : undefined}
   >
     <RoundCuboidCollider args={[.43, .43, .43, .07]} friction={PHYSICS.dieFriction} restitution={PHYSICS.dieRestitution}/>
     <DieVisual/>
@@ -152,7 +160,7 @@ function Throw({ plan, onPhase, onComplete, onImpact }: Omit<SceneProps, "count"
     }
   });
 
-  return <>{plan.dice.map((die) => <PhysicalDie key={die.id} die={die} register={register} onFirstImpact={handleFirstImpact} onImpact={(force) => impactRef.current(force)}/>)}</>;
+  return <>{plan.dice.map((die) => <PhysicalDie key={die.id} die={die} register={register} onFirstImpact={handleFirstImpact} onImpact={(force, x, motion) => impactRef.current(force, x, motion)}/>)}</>;
 }
 
 export function TrayScene(props: SceneProps) {

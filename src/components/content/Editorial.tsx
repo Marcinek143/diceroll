@@ -1,4 +1,5 @@
 import { ChartNoAxesColumn, ChevronDown, Dices, GraduationCap, Scale, Swords, Gamepad2, ChartColumnIncreasing } from "lucide-react";
+import Link from "next/link";
 
 const steps = [
   { title: "Choose your dice", description: "Select between one and four standard six-sided dice using the selector bar.", detail: "1 to 4 D6" },
@@ -98,7 +99,7 @@ export function Footer() {
     <div className="mx-auto max-w-7xl px-4 sm:px-8">
       <div className="flex flex-col justify-between gap-6 border-b border-[var(--line)] pb-8 md:flex-row md:items-center">
         <div><div className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[var(--line)] bg-panel-raised text-accent-text"><Dices size={15}/></span><span className="text-sm font-semibold">DiceRoll</span></div><p className="mt-1 text-xs text-subtext">Roll the dice. Leave it to chance.</p></div>
-        <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-subtext"><a href="#about" className="hover:text-accent-text">About</a><a href="#how-it-works" className="hover:text-accent-text">How It Works</a><a href="#faq" className="hover:text-accent-text">FAQ</a></nav>
+        <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-subtext"><a href="#about" className="hover:text-accent-text">About</a><a href="#how-it-works" className="hover:text-accent-text">How It Works</a><a href="#faq" className="hover:text-accent-text">FAQ</a><Link href="/privacy" className="hover:text-accent-text">Privacy Policy</Link></nav>
       </div>
       <div className="mt-8 flex flex-col items-center justify-between gap-4 text-xs text-muted sm:flex-row"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-accent"/>Free online dice roller</span><span>© {new Date().getFullYear()} DiceRoll.</span></div>
     </div>

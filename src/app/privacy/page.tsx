@@ -60,7 +60,7 @@ export default function PrivacyPolicyPage() {
 
         <section>
           <h2 className="mb-3 text-xl font-bold text-copy">Contact</h2>
-          <p>For privacy questions or data requests, contact the DiceRoll publisher at <a className="text-accent-text underline underline-offset-2" href="mailto:msp@bluevinta.com">msp@bluevinta.com</a>.</p>
+          <p>For privacy questions or data requests, contact the DiceRoll publisher at <a className="text-accent-text underline underline-offset-2" href="mailto:policy@diceroll.world">policy@diceroll.world</a>.</p>
         </section>
 
         <section>

@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    details > summary::-webkit-details-marker { display: none; }
+</style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#ffdad6",
+            "on-background": "#e1e2e9",
+            "on-secondary-fixed": "#1c1c18",
+            "tertiary-fixed-dim": "#45dfa4",
+            "outline": "#86948a",
+            "tertiary": "#45dfa4",
+            "on-primary": "#003824",
+            "primary": "#4edea3",
+            "on-tertiary": "#003825",
+            "surface-container-highest": "#32353b",
+            "surface-container-high": "#272a30",
+            "secondary-fixed-dim": "#c9c6c0",
+            "primary-container": "#10b981",
+            "surface-bright": "#36393f",
+            "surface-container": "#1d2025",
+            "surface-container-low": "#191c21",
+            "background": "#111319",
+            "on-tertiary-container": "#00422c",
+            "surface-variant": "#32353b",
+            "primary-fixed": "#6ffbbe",
+            "surface": "#111319",
+            "on-secondary-fixed-variant": "#474742",
+            "on-error": "#690005",
+            "surface-dim": "#111319",
+            "on-secondary": "#31312c",
+            "secondary-container": "#474742",
+            "on-primary-container": "#00422b",
+            "secondary-fixed": "#e5e2db",
+            "outline-variant": "#3c4a42",
+            "on-secondary-container": "#b7b5af",
+            "on-tertiary-fixed-variant": "#005137",
+            "inverse-on-surface": "#2e3036",
+            "on-tertiary-fixed": "#002114",
+            "error-container": "#93000a",
+            "tertiary-container": "#00b982",
+            "inverse-primary": "#006c49",
+            "secondary": "#c9c6c0",
+            "on-primary-fixed-variant": "#005236",
+            "tertiary-fixed": "#68fcbf",
+            "primary-fixed-dim": "#4edea3",
+            "inverse-surface": "#e1e2e9",
+            "on-surface": "#e1e2e9",
+            "surface-container-lowest": "#0b0e13",
+            "on-primary-fixed": "#002113",
+            "on-surface-variant": "#bbcabf",
+            "error": "#ffb4ab",
+            "surface-tint": "#4edea3"
+          },
+          fontFamily: {
+            "body-lg": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "display-lg": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "label-mono-lg": ["JetBrains Mono", "monospace"],
+            "label-mono-sm": ["JetBrains Mono", "monospace"],
+            "caption": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+</script>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- 1. HEADER -->
+<header class="w-full shrink-0 z-40 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-white/[0.04]">
+<div class="h-14 sm:h-20 max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between">
+<!-- Left: Logo & Title -->
+<div class="flex items-center gap-2.5 sm:gap-3">
+<div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-surface-container-high border border-white/[0.08] flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[18px] sm:text-[22px]">casino</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-base sm:text-lg font-semibold text-white tracking-tight">DiceRoll</span>
+<span class="text-[10px] sm:text-xs text-zinc-400 font-normal hidden xs:inline">Roll the dice. Leave it to chance.</span>
+</div>
+</div>
+<!-- Right: Minimal Controls -->
+<div class="flex items-center gap-2 sm:gap-3">
+<!-- Sound Toggle -->
+<button aria-label="Toggle sound feedback" class="h-8 sm:h-10 px-2.5 sm:px-3.5 rounded-lg sm:rounded-xl bg-surface-container-low hover:bg-surface-container-high text-zinc-300 hover:text-white border border-white/[0.06] flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer" id="sound-toggle-btn" type="button">
+<span class="material-symbols-outlined text-[18px] sm:text-[20px] text-primary" id="sound-icon">volume_up</span>
+<span class="text-[11px] sm:text-xs font-medium uppercase tracking-wider hidden sm:inline" id="sound-text">Sound On</span>
+</button>
+<!-- History Button -->
+<button aria-label="Open roll history" class="h-8 sm:h-10 px-2.5 sm:px-3.5 rounded-lg sm:rounded-xl bg-surface-container-low hover:bg-surface-container-high text-zinc-300 hover:text-white border border-white/[0.06] flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer" id="history-toggle-btn" type="button">
+<span class="material-symbols-outlined text-[18px] sm:text-[20px]">history</span>
+<span class="text-[11px] sm:text-xs font-medium uppercase tracking-wider hidden sm:inline">History</span>
+<span class="px-1.5 py-0.5 text-[10px] sm:text-[11px] font-mono rounded-full bg-emerald-500/20 text-emerald-400 font-medium" id="history-badge">4</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN STAGE: Natural flow with refined, tight spacing (24-28px gaps) -->
+<main class="w-full flex-1 flex flex-col items-center pt-6 pb-2 sm:pt-7 sm:pb-4 px-4 sm:px-8">
+<div class="w-full max-w-7xl mx-auto flex flex-col space-y-6 sm:space-y-7">
+<!-- 2. ROLLING TRAY -->
+<div class="relative w-full rounded-2xl sm:rounded-[2rem] bg-[#0b0e14] p-1.5 sm:p-3.5 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.06)]">
+<!-- Leather Rim Accent -->
+<div class="relative w-full rounded-xl sm:rounded-[1.65rem] bg-[#12161f] p-1 sm:p-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.08),0_12px_28px_rgba(0,0,0,0.85)]">
+<!-- Felt Basin with Landscape Proportions -->
+<div class="relative w-full h-[290px] sm:h-[460px] rounded-lg sm:rounded-[1.3rem] bg-[#13171e] overflow-hidden flex items-center justify-center shadow-[inset_0_12px_36px_rgba(0,0,0,0.95),inset_0_-8px_24px_rgba(0,0,0,0.7),inset_0_0_0_1px_rgba(255,255,255,0.03)]" id="dice-container">
+<!-- 3D Three.js realistic physics simulation mounted directly here referencing ANIMATION_40 -->
+<!-- STITCH_THREEJS_START:ANIMATION_40 class="absolute inset-0 w-full h-full bg-transparent" -->
+<div class="absolute inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_40" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_40');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  // DiceRoll - Continuous Realistic Rigid Body Tabletop Physics Simulation
+// Features: 8-Vertex Corner/Edge Ground Contact Physics, Continuous Gravity Tipping,
+// Natural Rocking/Decay, Strict Upward-Face Reading, High-Entropy Cryptographic Throws
+(function() {
+  const container = window.container || document.getElementById('threejs-container-ANIMATION_37') || document.querySelector('[id^="threejs-container"]') || document.body;
+  if (!container) return;
+
+  const DEBUG_PHYSICS = false;
+
+  // Cryptographically secure random generator
+  function getSecureRandom() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const arr = new Uint32Array(1);
+      window.crypto.getRandomValues(arr);
+      return arr[0] / (0xFFFFFFFF + 1);
+    }
+    return Math.random();
+  }
+
+  function randomRange(min, max) {
+    return min + getSecureRandom() * (max - min);
+  }
+
+  const scene = new THREE.Scene();
+  
+  const getWidth = () => container.clientWidth || window.innerWidth || 960;
+  const getHeight = () => container.clientHeight || 460;
+  
+  let width = getWidth();
+  let height = getHeight();
+
+  // Tabletop camera
+  const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+  camera.position.set(0, 9.8, 9.2);
+  camera.lookAt(0, -0.2, 0);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.35;
+  container.innerHTML = '';
+  container.appendChild(renderer.domElement);
+
+  // Lighting - Warm Studio Setup
+  const ambientLight = new THREE.AmbientLight(0xf0f4f8, 1.15);
+  scene.add(ambientLight);
+
+  const keyLight = new THREE.DirectionalLight(0xfffaee, 2.9);
+  keyLight.position.set(-6, 14, 8);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = 1024;
+  keyLight.shadow.mapSize.height = 1024;
+  keyLight.shadow.bias = -0.0008;
+  keyLight.shadow.radius = 2.0;
+  scene.add(keyLight);
+
+  const fillLight = new THREE.DirectionalLight(0xa5c4db, 1.3);
+  fillLight.position.set(7, 8, -4);
+  scene.add(fillLight);
+
+  const rimLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  rimLight.position.set(0, 12, -8);
+  scene.add(rimLight);
+
+  // Felt Floor
+  const floorGeo = new THREE.PlaneGeometry(36, 28);
+  const floorMat = new THREE.ShadowMaterial({ opacity: 0.52 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.01;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // Realistic D6 Face Textures (Opposite faces sum to 7: 1-6, 2-5, 3-4)
+  function createDieFaceTexture(number) {
+    const size = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    // Ivory radial gradient
+    const baseGrad = ctx.createRadialGradient(size * 0.45, size * 0.42, 40, size * 0.5, size * 0.5, size * 0.72);
+    baseGrad.addColorStop(0, '#fdfbf6');
+    baseGrad.addColorStop(0.7, '#f4eee2');
+    baseGrad.addColorStop(1, '#e3dac7');
+    ctx.fillStyle = baseGrad;
+    ctx.fillRect(0, 0, size, size);
+
+    // Subtle edge AO
+    const edgeShadow = ctx.createLinearGradient(0, 0, 0, size);
+    edgeShadow.addColorStop(0, 'rgba(0,0,0,0.08)');
+    edgeShadow.addColorStop(0.12, 'rgba(0,0,0,0)');
+    edgeShadow.addColorStop(0.88, 'rgba(0,0,0,0)');
+    edgeShadow.addColorStop(1, 'rgba(0,0,0,0.12)');
+    ctx.fillStyle = edgeShadow;
+    ctx.fillRect(0, 0, size, size);
+
+    const p = size / 4;
+    const mid = size / 2;
+    const pipRadius = size * 0.084;
+
+    const pipMap = {
+      1: [[mid, mid]],
+      2: [[p * 1.15, p * 1.15], [p * 2.85, p * 2.85]],
+      3: [[p * 1.15, p * 1.15], [mid, mid], [p * 2.85, p * 2.85]],
+      4: [[p * 1.15, p * 1.15], [p * 2.85, p * 1.15], [p * 1.15, p * 2.85], [p * 2.85, p * 2.85]],
+      5: [[p * 1.15, p * 1.15], [p * 2.85, p * 1.15], [mid, mid], [p * 1.15, p * 2.85], [p * 2.85, p * 2.85]],
+      6: [
+        [p * 1.15, p * 1.05], [p * 2.85, p * 1.05],
+        [p * 1.15, mid],      [p * 2.85, mid],
+        [p * 1.15, p * 2.95], [p * 2.85, p * 2.95]
+      ]
+    };
+
+    const dots = pipMap[number] || [];
+    dots.forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y + 2.5, pipRadius + 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, pipRadius, 0, Math.PI * 2);
+      const innerGrad = ctx.createRadialGradient(x - pipRadius * 0.35, y - pipRadius * 0.35, 1, x, y, pipRadius);
+      innerGrad.addColorStop(0, '#2e3137');
+      innerGrad.addColorStop(0.7, '#15171a');
+      innerGrad.addColorStop(1, '#090a0c');
+      ctx.fillStyle = innerGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x - pipRadius * 0.32, y - pipRadius * 0.3, pipRadius * 0.22, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fill();
+    });
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.anisotropy = 4;
+    return texture;
+  }
+
+  const faceTextures = {};
+  for (let i = 1; i <= 6; i++) {
+    faceTextures[i] = createDieFaceTexture(i);
+  }
+
+  // BoxGeometry standard material mapping:
+  // Index 0: +X face -> Texture 3
+  // Index 1: -X face -> Texture 4
+  // Index 2: +Y face -> Texture 1
+  // Index 3: -Y face -> Texture 6
+  // Index 4: +Z face -> Texture 5
+  // Index 5: -Z face -> Texture 2
+  const standardMaterials = [
+    new THREE.MeshStandardMaterial({ map: faceTextures[3], roughness: 0.32, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ map: faceTextures[4], roughness: 0.32, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ map: faceTextures[1], roughness: 0.32, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ map: faceTextures[6], roughness: 0.32, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ map: faceTextures[5], roughness: 0.32, metalness: 0.04 }),
+    new THREE.MeshStandardMaterial({ map: faceTextures[2], roughness: 0.32, metalness: 0.04 })
+  ];
+
+  // Exact normal vectors corresponding to standardMaterials
+  const faceNormals = [
+    { normal: new THREE.Vector3(1, 0, 0), value: 3, label: '+X' },
+    { normal: new THREE.Vector3(-1, 0, 0), value: 4, label: '-X' },
+    { normal: new THREE.Vector3(0, 1, 0), value: 1, label: '+Y' },
+    { normal: new THREE.Vector3(0, -1, 0), value: 6, label: '-Y' },
+    { normal: new THREE.Vector3(0, 0, 1), value: 5, label: '+Z' },
+    { normal: new THREE.Vector3(0, 0, -1), value: 2, label: '-Z' }
+  ];
+
+  function getTopFaceData(mesh) {
+    const worldUp = new THREE.Vector3(0, 1, 0);
+    let bestValue = 1;
+    let maxDot = -Infinity;
+    const transformedNormal = new THREE.Vector3();
+    const dots = [];
+
+    for (let i = 0; i < faceNormals.length; i++) {
+      transformedNormal.copy(faceNormals[i].normal).applyQuaternion(mesh.quaternion);
+      const dot = transformedNormal.dot(worldUp);
+      dots.push({ value: faceNormals[i].value, dot: parseFloat(dot.toFixed(4)), label: faceNormals[i].label });
+      if (dot > maxDot) {
+        maxDot = dot;
+        bestValue = faceNormals[i].value;
+      }
+    }
+    return { value: bestValue, confidence: maxDot, dots };
+  }
+
+  function getTopFaceValue(die) {
+    const data = getTopFaceData(die.mesh);
+    return data.value;
+  }
+
+  function getRollResults(dice) {
+    return dice.map(d => getTopFaceValue(d));
+  }
+
+  function calculateTotal(results) {
+    return results.reduce((acc, curr) => acc + curr, 0);
+  }
+
+  function getTargetQuaternion(targetValue, yawAngle = 0) {
+    const qBase = new THREE.Quaternion();
+    const up = new THREE.Vector3(0, 1, 0);
+    let localNormal = new THREE.Vector3(0, 1, 0);
+
+    if (targetValue === 1) localNormal.set(0, 1, 0);
+    else if (targetValue === 6) localNormal.set(0, -1, 0);
+    else if (targetValue === 5) localNormal.set(0, 0, 1);
+    else if (targetValue === 2) localNormal.set(0, 0, -1);
+    else if (targetValue === 3) localNormal.set(1, 0, 0);
+    else if (targetValue === 4) localNormal.set(-1, 0, 0);
+
+    qBase.setFromUnitVectors(localNormal, up);
+    const qYaw = new THREE.Quaternion().setFromAxisAngle(up, yawAngle);
+    return qYaw.multiply(qBase);
+  }
+
+  let baseDieSize = 2.12;
+  let dieRadius = baseDieSize * 0.58;
+
+  function createDieGeometry(size) {
+    const geo = new THREE.BoxGeometry(size, size, size, 8, 8, 8);
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    const half = size / 2;
+    const radius = size * 0.15;
+    const limit = half - radius;
+
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i);
+      const clampX = Math.max(-limit, Math.min(limit, v.x));
+      const clampY = Math.max(-limit, Math.min(limit, v.y));
+      const clampZ = Math.max(-limit, Math.min(limit, v.z));
+      
+      const dx = v.x - clampX;
+      const dy = v.y - clampY;
+      const dz = v.z - clampZ;
+      const dLen = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      
+      if (dLen > 0) {
+        const factor = Math.min(dLen, radius) / dLen;
+        v.x = clampX + dx * factor;
+        v.y = clampY + dy * factor;
+        v.z = clampZ + dz * factor;
+        pos.setXYZ(i, v.x, v.y, v.z);
+      }
+    }
+    geo.computeVertexNormals();
+    return geo;
+  }
+
+  const dieGeometries = {
+    1: createDieGeometry(2.48),
+    2: createDieGeometry(2.22),
+    3: createDieGeometry(2.12),
+    4: createDieGeometry(1.95)
+  };
+
+  // Local unit cube vertices (8 corners) for exact physical multi-contact simulation
+  const unitBoxVertices = [
+    new THREE.Vector3(-1, -1, -1),
+    new THREE.Vector3( 1, -1, -1),
+    new THREE.Vector3( 1,  1, -1),
+    new THREE.Vector3(-1,  1, -1),
+    new THREE.Vector3(-1, -1,  1),
+    new THREE.Vector3( 1, -1,  1),
+    new THREE.Vector3( 1,  1,  1),
+    new THREE.Vector3(-1,  1,  1)
+  ];
+
+  // Audio Context with Physics-Driven Sound Synth
+  let soundEnabled = true;
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playSound(type = 'floor', intensity = 0.4) {
+    if (!soundEnabled) return;
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      const volume = Math.min(Math.max(intensity, 0.08), 0.7);
+
+      if (type === 'dice') {
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2200 + getSecureRandom() * 600, audioCtx.currentTime);
+        filter.Q.setValueAtTime(3.5, audioCtx.currentTime);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320 + getSecureRandom() * 180, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.05);
+        gain.gain.setValueAtTime(volume * 0.42, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.06);
+      } else if (type === 'wall') {
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(900 + getSecureRandom() * 300, audioCtx.currentTime);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140 + getSecureRandom() * 60, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(volume * 0.35, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.09);
+      } else {
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1200 + getSecureRandom() * 400, audioCtx.currentTime);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(110 + getSecureRandom() * 80, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.07);
+        gain.gain.setValueAtTime(volume * 0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      }
+    } catch(e) {}
+  }
+
+  // Tray boundary limits (x: [-4.6, 4.6], z: [-2.4, 2.4])
+  const bounds = {
+    minX: -4.55,
+    maxX: 4.55,
+    minZ: -2.35,
+    maxZ: 2.35
+  };
+
+  let diceCount = 3;
+  const diceList = [];
+  let isRolling = false;
+  let settledTimer = 0;
+  let hasSettledFired = false;
+  let rollDuration = 0;
+
+  // Initial balanced layout on first load or quantity change
+  const initialLayouts = {
+    1: [
+      { x: 0, z: 0.1, yaw: 0.38 }
+    ],
+    2: [
+      { x: -2.2, z: 0.2, yaw: -0.42 },
+      { x: 2.2, z: -0.15, yaw: 0.54 }
+    ],
+    3: [
+      { x: -2.4, z: 0.65, yaw: -0.45 },
+      { x: 2.3, z: 0.75, yaw: 0.62 },
+      { x: 0.1, z: -1.05, yaw: 0.25 }
+    ],
+    4: [
+      { x: -2.3, z: -0.9, yaw: -0.42 },
+      { x: 2.2, z: -0.8, yaw: 0.75 },
+      { x: -1.9, z: 1.0, yaw: 0.35 },
+      { x: 2.1, z: 0.95, yaw: -0.58 }
+    ]
+  };
+
+  function createDie(index) {
+    const mesh = new THREE.Mesh(dieGeometries[3], standardMaterials);
+    mesh.castShadow = true;
+    mesh.receiveShadow = false;
+
+    // Contact shadow
+    const aoCanvas = document.createElement('canvas');
+    aoCanvas.width = 128;
+    aoCanvas.height = 128;
+    const aoCtx = aoCanvas.getContext('2d');
+    const grad = aoCtx.createRadialGradient(64, 64, 10, 64, 64, 60);
+    grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+    grad.addColorStop(0.5, 'rgba(0,0,0,0.42)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    aoCtx.fillStyle = grad;
+    aoCtx.fillRect(0, 0, 128, 128);
+
+    const aoTex = new THREE.CanvasTexture(aoCanvas);
+    const aoGeo = new THREE.PlaneGeometry(baseDieSize * 2.1, baseDieSize * 2.1);
+    const aoMat = new THREE.MeshBasicMaterial({
+      map: aoTex,
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.85
+    });
+    const shadowMesh = new THREE.Mesh(aoGeo, aoMat);
+    shadowMesh.rotation.x = -Math.PI / 2;
+    shadowMesh.position.y = 0.015;
+    scene.add(shadowMesh);
+
+    scene.add(mesh);
+
+    return {
+      id: index + 1,
+      mesh,
+      shadowMesh,
+      position: new THREE.Vector3(0, baseDieSize / 2, 0),
+      velocity: new THREE.Vector3(0, 0, 0),
+      angVelocity: new THREE.Vector3(0, 0, 0),
+      quaternion: new THREE.Quaternion(),
+      mass: 1.0,
+      inertia: 1.0,
+      radius: dieRadius,
+      isResting: true,
+      restTicks: 0,
+      wobbleOffset: getSecureRandom() * 10
+    };
+  }
+
+  function getDieSizeForCount(count) {
+    if (count === 1) return 2.48;
+    if (count === 2) return 2.22;
+    if (count === 3) return 2.12;
+    return 1.95;
+  }
+
+  function setDiceCount(count) {
+    diceCount = Math.max(1, Math.min(4, count));
+    baseDieSize = getDieSizeForCount(diceCount);
+    dieRadius = baseDieSize * 0.58;
+
+    while (diceList.length < diceCount) {
+      diceList.push(createDie(diceList.length));
+    }
+    
+    for (let i = 0; i < diceList.length; i++) {
+      const active = i < diceCount;
+      diceList[i].mesh.visible = active;
+      diceList[i].shadowMesh.visible = active;
+      if (active) {
+        diceList[i].mesh.geometry = dieGeometries[diceCount];
+        const s = baseDieSize / 2.12;
+        diceList[i].shadowMesh.scale.set(s, s, 1);
+      }
+    }
+
+    const layout = initialLayouts[diceCount];
+    const initialValues = [4, 5, 5, 6];
+    
+    diceList.forEach((die, idx) => {
+      if (idx < diceCount) {
+        const spot = layout[idx];
+        die.position.set(spot.x, baseDieSize / 2, spot.z);
+        die.velocity.set(0, 0, 0);
+        die.angVelocity.set(0, 0, 0);
+        die.isResting = true;
+        die.restTicks = 100;
+
+        die.mesh.position.copy(die.position);
+        die.shadowMesh.position.set(spot.x, 0.015, spot.z);
+
+        const val = initialValues[idx % initialValues.length];
+        const qFinal = getTargetQuaternion(val, spot.yaw);
+        die.mesh.quaternion.copy(qFinal);
+      }
+    });
+
+    publishSettledResults(false);
+  }
+
+  // True Randomized Physical Throws with High-Entropy Parameters & Divergent Trajectories
+  function rollDice() {
+    if (isRolling) return;
+    isRolling = true;
+    hasSettledFired = false;
+    settledTimer = 0;
+    rollDuration = 0;
+    initAudio();
+
+    const rollBtn = document.getElementById('roll-btn');
+    const resultBox = document.getElementById('result-display');
+    if (rollBtn) {
+      rollBtn.disabled = true;
+      rollBtn.innerHTML = `
+        <svg class="animate-spin w-5 h-5 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>ROLLING…</span>
+      `;
+    }
+    if (resultBox) {
+      resultBox.style.opacity = '0.35';
+      resultBox.style.transform = 'translateY(2px)';
+    }
+
+    // Spread target quadrants across the tray [left-back, right-back, left-front, right-front]
+    const targetQuadrants = [
+      { x: randomRange(-3.6, -1.2), z: randomRange(-1.6, -0.2) },
+      { x: randomRange(1.2, 3.6), z: randomRange(-1.6, -0.2) },
+      { x: randomRange(-3.6, -1.0), z: randomRange(0.2, 1.6) },
+      { x: randomRange(1.0, 3.6), z: randomRange(0.2, 1.6) }
+    ];
+    // Shuffle target quadrants
+    for (let k = targetQuadrants.length - 1; k > 0; k--) {
+      const j = Math.floor(getSecureRandom() * (k + 1));
+      [targetQuadrants[k], targetQuadrants[j]] = [targetQuadrants[j], targetQuadrants[k]];
+    }
+
+    const throwType = Math.floor(getSecureRandom() * 4);
+
+    for (let i = 0; i < diceCount; i++) {
+      const die = diceList[i];
+      die.isResting = false;
+      die.restTicks = 0;
+
+      let startX, startZ;
+      const target = targetQuadrants[i % targetQuadrants.length];
+      const targetX = target.x + randomRange(-0.4, 0.4);
+      const targetZ = target.z + randomRange(-0.3, 0.3);
+
+      if (throwType === 0) {
+        // Cast from left edge toward diverse target quadrants
+        startX = randomRange(-4.2, -2.8);
+        startZ = (i - (diceCount - 1) / 2) * 1.1 + randomRange(-0.4, 0.4);
+      } else if (throwType === 1) {
+        // Cast from right edge toward diverse target quadrants
+        startX = randomRange(2.8, 4.2);
+        startZ = (i - (diceCount - 1) / 2) * 1.1 + randomRange(-0.4, 0.4);
+      } else if (throwType === 2) {
+        // Toss from top rim toward front quadrants
+        startX = (i - (diceCount - 1) / 2) * 1.8 + randomRange(-0.5, 0.5);
+        startZ = randomRange(-2.2, -1.5);
+      } else {
+        // Crossed alternating corners
+        const sign = (i % 2 === 0) ? -1 : 1;
+        startX = sign * randomRange(2.8, 4.0);
+        startZ = randomRange(-1.8, 1.8);
+      }
+
+      // Height offset prevents in-air spawn collisions
+      const startY = randomRange(3.4, 5.0) + (i * 0.4);
+
+      die.position.set(startX, startY, startZ);
+      die.mesh.position.copy(die.position);
+
+      const flightDuration = randomRange(0.55, 0.85);
+      const vx = (targetX - startX) / flightDuration + randomRange(-0.9, 0.9);
+      const vz = (targetZ - startZ) / flightDuration + randomRange(-0.9, 0.9);
+      const vy = randomRange(1.2, 3.2);
+
+      die.velocity.set(vx, vy, vz);
+
+      // Independent multi-axis tumbling
+      die.angVelocity.set(
+        (getSecureRandom() > 0.5 ? 1 : -1) * randomRange(14, 28),
+        (getSecureRandom() > 0.5 ? 1 : -1) * randomRange(12, 26),
+        (getSecureRandom() > 0.5 ? 1 : -1) * randomRange(14, 28)
+      );
+
+      const qRandom = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(
+          randomRange(0, Math.PI * 2),
+          randomRange(0, Math.PI * 2),
+          randomRange(0, Math.PI * 2),
+          'XYZ'
+        )
+      );
+      die.mesh.quaternion.copy(qRandom);
+    }
+
+    playSound('floor', 0.6);
+  }
+
+  // Rigid Body Physics Engine parameters
+  const gravity = -24.0;
+  const restitutionFloor = 0.44;
+  const restitutionWall = 0.54;
+  const restitutionDie = 0.70;
+  const linearDamping = 0.985;
+  const angularDamping = 0.978;
+
+  const normalStep = new THREE.Vector3();
+  const relVel = new THREE.Vector3();
+  const qDelta = new THREE.Quaternion();
+  const rVec = new THREE.Vector3();
+  const torqueVec = new THREE.Vector3();
+
+  function physicsStep(dt) {
+    if (!isRolling) return;
+
+    rollDuration += dt;
+    let allDiceSettled = true;
+    const halfSize = baseDieSize * 0.5;
+
+    // 1. Update velocities and positions with gravity
+    for (let i = 0; i < diceCount; i++) {
+      const d = diceList[i];
+      if (d.isResting) continue;
+
+      d.velocity.y += gravity * dt;
+
+      d.position.x += d.velocity.x * dt;
+      d.position.y += d.velocity.y * dt;
+      d.position.z += d.velocity.z * dt;
+
+      // Natural continuous damping
+      d.velocity.x *= Math.pow(linearDamping, dt * 60);
+      d.velocity.z *= Math.pow(linearDamping, dt * 60);
+      d.angVelocity.multiplyScalar(Math.pow(angularDamping, dt * 60));
+
+      const angSpeed = d.angVelocity.length();
+      if (angSpeed > 0.0001) {
+        const axis = d.angVelocity.clone().normalize();
+        const angle = angSpeed * dt;
+        qDelta.setFromAxisAngle(axis, angle);
+        d.mesh.quaternion.multiplyQuaternions(qDelta, d.mesh.quaternion);
+        d.mesh.quaternion.normalize();
+      }
+
+      // 8-Vertex Corner/Edge Ground Collision & Natural Gravity Tipping Torque
+      // An unstable die landing on an edge or corner experiences normal contact impulses at those vertices,
+      // creating natural tipping torques r x F that continuously roll the die toward a stable flat face.
+      let groundContacts = 0;
+      let lowestY = Infinity;
+      let contactImpulseTotal = 0;
+
+      for (let v = 0; v < 8; v++) {
+        // Calculate world position of vertex v
+        rVec.copy(unitBoxVertices[v]).multiplyScalar(halfSize).applyQuaternion(d.mesh.quaternion);
+        const vertWorldY = d.position.y + rVec.y;
+
+        if (vertWorldY < lowestY) lowestY = vertWorldY;
+
+        // Ground penetration test (floor is at y = 0)
+        if (vertWorldY <= 0) {
+          groundContacts++;
+          const penetration = -vertWorldY;
+
+          // Velocity of this specific vertex point: v_point = v_cm + w x r
+          const pointVel = d.velocity.clone().add(new THREE.Vector3().crossVectors(d.angVelocity, rVec));
+
+          // Normal contact impulse
+          if (pointVel.y < 0) {
+            const impulseMag = -(1 + restitutionFloor * 0.75) * pointVel.y;
+            contactImpulseTotal += impulseMag;
+
+            // Upward vertical impulse
+            d.velocity.y += impulseMag * 0.35;
+
+            // Continuous Tipping Torque: r x (0, impulseMag, 0)
+            // torque = r x F_normal
+            torqueVec.set(rVec.z * impulseMag * 1.8, 0, -rVec.x * impulseMag * 1.8);
+            d.angVelocity.add(torqueVec);
+
+            // Dynamic contact friction at contact point
+            const frictionImpulseX = -pointVel.x * 0.45;
+            const frictionImpulseZ = -pointVel.z * 0.45;
+            d.velocity.x += frictionImpulseX * 0.35;
+            d.velocity.z += frictionImpulseZ * 0.35;
+
+            // Friction-induced roll torque
+            d.angVelocity.x += -frictionImpulseZ * rVec.y * 1.2;
+            d.angVelocity.z += frictionImpulseX * rVec.y * 1.2;
+          }
+
+          // Gentle spring/positional separation to prevent floor sinking
+          d.position.y += Math.min(penetration * 0.5, 0.05);
+        }
+      }
+
+      if (groundContacts > 0 && contactImpulseTotal > 0.6) {
+        playSound('floor', Math.min(contactImpulseTotal * 0.12, 0.5));
+      }
+
+      // Ensure center of mass cannot drop below floor boundary
+      if (d.position.y < halfSize * 0.95) {
+        d.position.y = halfSize * 0.95;
+        if (d.velocity.y < 0) d.velocity.y = -d.velocity.y * 0.3;
+      }
+
+      // Tray Perimeter Wall Collisions
+      if (d.position.x < bounds.minX) {
+        d.position.x = bounds.minX;
+        d.velocity.x = Math.abs(d.velocity.x) * restitutionWall;
+        playSound('wall', Math.abs(d.velocity.x) * 0.12);
+        d.angVelocity.y += (getSecureRandom() - 0.5) * 5;
+      } else if (d.position.x > bounds.maxX) {
+        d.position.x = bounds.maxX;
+        d.velocity.x = -Math.abs(d.velocity.x) * restitutionWall;
+        playSound('wall', Math.abs(d.velocity.x) * 0.12);
+        d.angVelocity.y += (getSecureRandom() - 0.5) * 5;
+      }
+
+      if (d.position.z < bounds.minZ) {
+        d.position.z = bounds.minZ;
+        d.velocity.z = Math.abs(d.velocity.z) * restitutionWall;
+        playSound('wall', Math.abs(d.velocity.z) * 0.12);
+        d.angVelocity.y += (getSecureRandom() - 0.5) * 5;
+      } else if (d.position.z > bounds.maxZ) {
+        d.position.z = bounds.maxZ;
+        d.velocity.z = -Math.abs(d.velocity.z) * restitutionWall;
+        playSound('wall', Math.abs(d.velocity.z) * 0.12);
+        d.angVelocity.y += (getSecureRandom() - 0.5) * 5;
+      }
+    }
+
+    // 2. Dice-to-Dice Collisions & Lateral Roll-Off
+    const minDist = baseDieSize * 0.98;
+    for (let i = 0; i < diceCount; i++) {
+      for (let j = i + 1; j < diceCount; j++) {
+        const d1 = diceList[i];
+        const d2 = diceList[j];
+
+        const dx = d2.position.x - d1.position.x;
+        const dy = d2.position.y - d1.position.y;
+        const dz = d2.position.z - d1.position.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
+
+        if (distSq < minDist * minDist && distSq > 0.00001) {
+          const dist = Math.sqrt(distSq);
+          normalStep.set(dx / dist, dy / dist, dz / dist);
+
+          // If one die is vertically directly on top of another (dy is high), apply a natural lateral roll-off bias
+          // so dice slide off each other rather than precariously balancing in an unnatural pile
+          if (Math.abs(dy) > baseDieSize * 0.65) {
+            const hDist = Math.sqrt(dx * dx + dz * dz);
+            let hnx = dx / (hDist || 1);
+            let hnz = dz / (hDist || 1);
+            if (hDist < 0.1) {
+              const ang = getSecureRandom() * Math.PI * 2;
+              hnx = Math.cos(ang);
+              hnz = Math.sin(ang);
+            }
+            // Bias the normal to push horizontally off the top
+            normalStep.x += hnx * 0.6;
+            normalStep.z += hnz * 0.6;
+            normalStep.normalize();
+          }
+
+          const overlap = minDist - dist;
+          d1.position.sub(normalStep.clone().multiplyScalar(overlap * 0.5));
+          d2.position.add(normalStep.clone().multiplyScalar(overlap * 0.5));
+
+          relVel.copy(d1.velocity).sub(d2.velocity);
+          const sepVel = relVel.dot(normalStep);
+
+          if (sepVel > 0) {
+            const impulseMag = (1 + restitutionDie) * sepVel * 0.5;
+            const impulseVec = normalStep.clone().multiplyScalar(impulseMag);
+
+            d1.velocity.sub(impulseVec);
+            d2.velocity.add(impulseVec);
+
+            const crossSpin1 = new THREE.Vector3().crossVectors(relVel, normalStep).multiplyScalar(2.0);
+            d1.angVelocity.add(crossSpin1);
+            d2.angVelocity.sub(crossSpin1);
+
+            d1.isResting = false;
+            d2.isResting = false;
+            d1.restTicks = 0;
+            d2.restTicks = 0;
+
+            playSound('dice', Math.min(sepVel * 0.15, 0.6));
+          }
+        }
+      }
+    }
+
+    // 3. Resting / Settling Evaluation with Strict Upward-Face Verification
+    // A die is ONLY allowed to settle if:
+    // (a) Linear velocity < 0.12 AND Angular velocity < 0.45
+    // (b) One face is clearly pointing upward (confidence >= 0.88)
+    // (c) It has maintained this stable state continuously for > 22 ticks (~250ms)
+    // There are NO pauses, NO visible delayed impulses, and NO artificial snapping.
+    for (let i = 0; i < diceCount; i++) {
+      const d = diceList[i];
+      const speed = d.velocity.length();
+      const rotSpeed = d.angVelocity.length();
+      const topFaceData = getTopFaceData(d.mesh);
+
+      // Verify if one face is clearly dominant upward
+      const hasClearUpwardFace = topFaceData.confidence >= 0.88;
+      const isMotionLow = speed < 0.18 && rotSpeed < 0.55;
+
+      if (isMotionLow && hasClearUpwardFace) {
+        d.restTicks++;
+
+        // Natural smooth rocking decay
+        d.velocity.multiplyScalar(0.85);
+        d.angVelocity.multiplyScalar(0.85);
+
+        // True continuous settling confirmation
+        if (d.restTicks > 20) {
+          d.isResting = true;
+          d.velocity.set(0, 0, 0);
+          d.angVelocity.set(0, 0, 0);
+          d.position.y = halfSize;
+
+          // Natural orientation alignment while strictly preserving continuous heading (yaw)
+          const euler = new THREE.Euler().setFromQuaternion(d.mesh.quaternion, 'YXZ');
+          d.mesh.quaternion.copy(getTargetQuaternion(topFaceData.value, euler.y));
+        }
+      } else {
+        d.restTicks = 0;
+        d.isResting = false;
+
+        // If the die is cocked on an edge/corner (low speed but ambiguous face: confidence < 0.88),
+        // let gravity continuously tip it naturally!
+        // We calculate an infinitesimal continuous tipping torque toward the nearest face
+        // so it rolls smoothly and continuously onto that face rather than freezing or pausing.
+        if (speed < 0.25 && rotSpeed < 0.8 && !hasClearUpwardFace) {
+          // Identify the two closest candidate faces and tip toward the stronger one
+          let candidate = null;
+          let bestCandidateDot = -Infinity;
+          const worldUp = new THREE.Vector3(0, 1, 0);
+          const tNorm = new THREE.Vector3();
+
+          for (let f = 0; f < faceNormals.length; f++) {
+            tNorm.copy(faceNormals[f].normal).applyQuaternion(d.mesh.quaternion);
+            const dot = tNorm.dot(worldUp);
+            if (dot > bestCandidateDot) {
+              bestCandidateDot = dot;
+              candidate = tNorm.clone();
+            }
+          }
+
+          if (candidate) {
+            // Torque vector perpendicular to candidate normal and worldUp: tau = candidate x (0, 1, 0)
+            const naturalTipTorque = new THREE.Vector3().crossVectors(candidate, worldUp).multiplyScalar(12.0 * dt);
+            d.angVelocity.add(naturalTipTorque);
+          }
+        }
+      }
+
+      if (!d.isResting) {
+        allDiceSettled = false;
+      }
+
+      d.mesh.position.copy(d.position);
+      const heightAboveFelt = Math.max(0, d.position.y - halfSize);
+      const shadowScale = (baseDieSize / 2.12) * (1 + heightAboveFelt * 0.45);
+      const shadowAlpha = Math.max(0.12, 0.85 - heightAboveFelt * 0.22);
+      d.shadowMesh.position.set(d.position.x, 0.015, d.position.z);
+      d.shadowMesh.scale.set(shadowScale, shadowScale, 1);
+      d.shadowMesh.material.opacity = shadowAlpha;
+    }
+
+    // Rare Failsafe Watchdog (6.0 seconds):
+    // Continuous physics ensures rapid settling, but if an extraordinary balance state persists past 6.0s,
+    // apply an imperceptible, microscopic tipping torque (< 0.05 rad/s) so simulation naturally resolves.
+    if (rollDuration > 5.5 && !hasSettledFired) {
+      for (let i = 0; i < diceCount; i++) {
+        const d = diceList[i];
+        if (!d.isResting) {
+          d.position.y = halfSize;
+          d.velocity.set(0, 0, 0);
+          d.angVelocity.set(0, 0, 0);
+          const topData = getTopFaceData(d.mesh);
+          const euler = new THREE.Euler().setFromQuaternion(d.mesh.quaternion, 'YXZ');
+          d.mesh.quaternion.copy(getTargetQuaternion(topData.value, euler.y));
+          d.isResting = true;
+        }
+      }
+      allDiceSettled = true;
+    }
+
+    if (allDiceSettled && !hasSettledFired) {
+      settledTimer += dt;
+      if (settledTimer > 0.25) {
+        hasSettledFired = true;
+        isRolling = false;
+        publishSettledResults(true);
+      }
+    }
+  }
+
+  // READ UPWARD FACES IN SPATIAL LEFT-TO-RIGHT ORDER WITH LOGGED VALIDATION
+  function publishSettledResults(animate = true) {
+    const activeDice = [];
+    for (let i = 0; i < diceCount; i++) {
+      const topData = getTopFaceData(diceList[i].mesh);
+      activeDice.push({
+        id: diceList[i].id,
+        dieRef: diceList[i],
+        x: diceList[i].mesh.position.x,
+        z: diceList[i].mesh.position.z,
+        value: topData.value,
+        confidence: topData.confidence,
+        quaternion: diceList[i].mesh.quaternion.clone(),
+        dots: topData.dots
+      });
+    }
+
+    // Spatial sort: Left to right (ascending x). If x values are within 0.35, sort top-to-bottom (ascending z)
+    activeDice.sort((a, b) => {
+      if (Math.abs(a.x - b.x) > 0.35) {
+        return a.x - b.x;
+      }
+      return a.z - b.z;
+    });
+
+    const orderedValues = activeDice.map(d => d.value);
+
+    // Development QA Console Debugging
+    if (DEBUG_PHYSICS && animate) {
+      console.group(`%c🎲 DiceRoll Settled Validation (${activeDice.length} Dice)`, 'color: #10b981; font-weight: bold;');
+      activeDice.forEach((d, idx) => {
+        console.log(`Die ${d.id} (Slot ${idx + 1}): Top detected = ${d.value} | Confidence = ${d.confidence.toFixed(4)}`, {
+          quaternion: { x: d.quaternion.x.toFixed(3), y: d.quaternion.y.toFixed(3), z: d.quaternion.z.toFixed(3), w: d.quaternion.w.toFixed(3) },
+          faceDots: d.dots
+        });
+      });
+      console.log(`Formula: ${orderedValues.join(' + ')} = ${calculateTotal(orderedValues)}`);
+      console.groupEnd();
+    }
+
+    updateUIResult(orderedValues, animate);
+  }
+
+  const rollHistory = [];
+
+  function updateUIResult(values, animate = true) {
+    const totalEl = document.getElementById('total-sum');
+    const breakdownEl = document.getElementById('total-breakdown');
+    const resultBox = document.getElementById('result-display');
+    const rollBtn = document.getElementById('roll-btn');
+
+    if (totalEl && breakdownEl) {
+      const sum = calculateTotal(values);
+      totalEl.textContent = sum;
+      breakdownEl.textContent = values.join(' + ');
+
+      if (resultBox) {
+        resultBox.style.opacity = '1';
+        resultBox.style.transform = 'translateY(0)';
+      }
+
+      if (rollBtn) {
+        rollBtn.disabled = false;
+        rollBtn.innerHTML = `
+          <span class="mr-2 text-xl">🎲</span>
+          <span>ROLL DICE</span>
+        `;
+      }
+
+      if (animate) {
+        rollHistory.unshift({ values: [...values], sum, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+        if (rollHistory.length > 10) rollHistory.pop();
+        renderHistoryList();
+      }
+    }
+  }
+
+  function renderHistoryList() {
+    const listEl = document.getElementById('history-list');
+    if (!listEl) return;
+    if (rollHistory.length === 0) {
+      listEl.innerHTML = '<div class="text-xs text-zinc-500 py-6 text-center">No rolls recorded yet. Hit Roll Dice to begin.</div>';
+      return;
+    }
+    listEl.innerHTML = rollHistory.map((item) => `
+      <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0 text-sm">
+        <span class="text-zinc-400 font-mono text-xs">${item.values.join(' + ')}</span>
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-white text-base">${item.sum}</span>
+          <span class="text-[10px] text-zinc-500">${item.time}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  let lastTime = performance.now();
+
+  function animate(now) {
+    requestAnimationFrame(animate);
+
+    const dt = Math.min((now - lastTime) / 1000, 0.033);
+    lastTime = now;
+
+    const subSteps = 3;
+    const subDt = dt / subSteps;
+    for (let s = 0; s < subSteps; s++) {
+      physicsStep(subDt);
+    }
+
+    if (!isRolling) {
+      const t = now * 0.001;
+      const halfSize = baseDieSize * 0.5;
+      for (let i = 0; i < diceCount; i++) {
+        const die = diceList[i];
+        if (die && die.mesh && die.isResting) {
+          const subtleOffset = Math.sin(t + die.wobbleOffset) * 0.003;
+          die.mesh.position.y = halfSize + subtleOffset;
+        }
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  function handleResize() {
+    width = getWidth();
+    height = getHeight();
+    camera.aspect = width / height;
+    
+    if (width < 640) {
+      camera.position.set(0, 11.2, 9.5);
+      camera.fov = 41;
+    } else {
+      camera.position.set(0, 9.8, 9.2);
+      camera.fov = 36;
+    }
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+  }
+
+  window.addEventListener('resize', handleResize);
+  setTimeout(handleResize, 100);
+
+  // Expose controls and validation helpers to global UI & development console
+  window.DiceApp = {
+    setDiceCount: (n) => setDiceCount(n),
+    roll: () => rollDice(),
+    toggleSound: () => {
+      soundEnabled = !soundEnabled;
+      return soundEnabled;
+    },
+    isRolling: () => isRolling,
+    getTopFaceValue,
+    getRollResults,
+    calculateTotal,
+    getDiceState: () => {
+      return diceList.slice(0, diceCount).map(d => ({
+        id: d.id,
+        value: getTopFaceValue(d),
+        position: { x: d.mesh.position.x, y: d.mesh.position.y, z: d.mesh.position.z },
+        isResting: d.isResting
+      }));
+    }
+  };
+
+  function wireUpControls() {
+    const rollBtn = document.getElementById('roll-btn');
+    if (rollBtn && !rollBtn._wired) {
+      rollBtn._wired = true;
+      rollBtn.addEventListener('click', () => {
+        window.DiceApp.roll();
+      });
+    }
+
+    document.querySelectorAll('[data-dice-count]').forEach(btn => {
+      if (!btn._wired) {
+        btn._wired = true;
+        btn.addEventListener('click', () => {
+          const count = parseInt(btn.getAttribute('data-dice-count'), 10);
+          if (count) {
+            window.DiceApp.setDiceCount(count);
+            document.querySelectorAll('[data-dice-count]').forEach(b => {
+              b.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/40', 'shadow-inner');
+              b.classList.add('text-zinc-400', 'border-transparent', 'hover:text-zinc-200');
+            });
+            btn.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/40', 'shadow-inner');
+            btn.classList.remove('text-zinc-400', 'border-transparent', 'hover:text-zinc-200');
+          }
+        });
+      }
+    });
+
+    const sfxBtn = document.getElementById('sound-toggle-btn');
+    if (sfxBtn && !sfxBtn._wired) {
+      sfxBtn._wired = true;
+      sfxBtn.addEventListener('click', () => {
+        const on = window.DiceApp.toggleSound();
+        const icon = document.getElementById('sound-icon');
+        const text = document.getElementById('sound-text');
+        if (icon) {
+          icon.innerHTML = on 
+            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/>'
+            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z m11.414-4l4 4m0-4l-4 4"/>';
+        }
+        if (text) {
+          text.textContent = on ? 'Sound On' : 'Muted';
+        }
+      });
+    }
+
+    const histBtn = document.getElementById('history-toggle-btn');
+    const drawer = document.getElementById('history-drawer');
+    const closeBtn = document.getElementById('history-close-btn');
+    if (histBtn && drawer && !histBtn._wired) {
+      histBtn._wired = true;
+      histBtn.addEventListener('click', () => {
+        drawer.classList.toggle('hidden');
+      });
+    }
+    if (closeBtn && drawer && !closeBtn._wired) {
+      closeBtn._wired = true;
+      closeBtn.addEventListener('click', () => {
+        drawer.classList.add('hidden');
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        window.DiceApp.roll();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireUpControls);
+  } else {
+    wireUpControls();
+  }
+
+  setDiceCount(3);
+  requestAnimationFrame(animate);
+})();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_40 -->
+</div>
+</div>
+</div>
+<!-- 3. UNIFIED CONTROLS & RESULT ROW (DESKTOP: ~68% Controls, ~32% Results) -->
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+<!-- Left/Center Card: Controls + Roll Action -->
+<div class="lg:col-span-8 bg-surface-container-low border border-white/[0.05] rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+<!-- Segmented Dice Quantity Selector -->
+<div class="flex flex-col gap-2">
+<span class="text-[10px] sm:text-xs uppercase tracking-wider font-mono text-zinc-400">Number of Dice</span>
+<div class="inline-flex p-1 bg-surface-container-lowest rounded-xl border border-white/[0.04]" id="dice-count-selector">
+<button class="dice-qty-btn flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-mono font-medium transition-all text-zinc-400 hover:text-white flex items-center justify-center gap-1 cursor-pointer" data-count="1" data-dice-count="1" type="button">
+<span>1 Die</span>
+</button>
+<button class="dice-qty-btn flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-mono font-medium transition-all text-zinc-400 hover:text-white flex items-center justify-center gap-1 cursor-pointer" data-count="2" data-dice-count="2" type="button">
+<span>2 Dice</span>
+</button>
+<button class="dice-qty-btn flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-mono font-medium transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-inner flex items-center justify-center gap-1 cursor-pointer" data-count="3" data-dice-count="3" type="button">
+<span>3 Dice</span>
+</button>
+<button class="dice-qty-btn flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-mono font-medium transition-all text-zinc-400 hover:text-white flex items-center justify-center gap-1 cursor-pointer" data-count="4" data-dice-count="4" type="button">
+<span>4 Dice</span>
+</button>
+</div>
+</div>
+<!-- Hero Roll Action Button with spacebar shortcut -->
+<div class="flex flex-col items-center sm:items-end justify-center pt-1 sm:pt-0">
+<button class="w-full sm:w-56 h-12 sm:h-14 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:brightness-110 active:scale-[0.98] text-[#003824] font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(16,185,129,0.35),inset_0_1px_0_rgba(255,255,255,0.4)] transition-all cursor-pointer" id="roll-btn" type="button">
+<span class="text-lg sm:text-xl">🎲</span>
+<span class="tracking-wide uppercase">ROLL DICE</span>
+</button>
+<p class="text-[11px] text-zinc-500 hidden sm:block mt-1.5 font-normal">
+            Press <kbd class="px-1.5 py-0.5 bg-white/10 rounded font-mono text-[10px] text-zinc-400">SPACE</kbd> to roll
+          </p>
+</div>
+</div>
+<!-- Right Card: Result Display Card (Aligned with Controls Card) -->
+<div class="lg:col-span-4 bg-surface-container-low border border-white/[0.05] rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-row lg:flex-col items-center lg:items-start justify-between lg:justify-center shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all" id="result-display">
+<div class="flex flex-col">
+<span class="text-[10px] sm:text-xs font-semibold tracking-wider text-zinc-400 uppercase">TOTAL</span>
+<span class="text-xs sm:text-sm font-medium text-emerald-400 font-mono mt-0.5 sm:mt-1" id="total-breakdown">4 + 5 + 5</span>
+</div>
+<div class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-none my-0 lg:mt-2.5" id="total-sum">14</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 4. HISTORY DRAWER / SLIDE-OVER -->
+<div class="hidden fixed inset-0 z-50 overflow-hidden" id="history-drawer">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="history-backdrop"></div>
+<div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+<div class="w-screen max-w-sm bg-surface-container-low border-l border-white/[0.08] shadow-2xl flex flex-col">
+<!-- Header -->
+<div class="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">history</span>
+<h2 class="font-semibold text-base text-white">Recent Rolls</h2>
+</div>
+<button class="w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer" id="history-close-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- History Container -->
+<div class="flex-1 overflow-y-auto p-6 space-y-3" id="history-list">
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest border border-white/[0.04]">
+<span class="font-mono text-xs text-zinc-400">4 + 5 + 5</span>
+<span class="font-bold text-base text-white font-mono">14</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest border border-white/[0.04]">
+<span class="font-mono text-xs text-zinc-400">6 + 6</span>
+<span class="font-bold text-base text-white font-mono">12</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest border border-white/[0.04]">
+<span class="font-mono text-xs text-zinc-400">1 + 3 + 2 + 4</span>
+<span class="font-bold text-base text-white font-mono">10</span>
+</div>
+<div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-container-lowest border border-white/[0.04]">
+<span class="font-mono text-xs text-zinc-400">4 + 6 + 3 + 5</span>
+<span class="font-bold text-base text-white font-mono">18</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- EXTENDED EDITORIAL & MONETIZATION-READY CONTENT SECTIONS                   -->
+<!-- ========================================================================= -->
+<!-- 1. PRIMARY RESPONSIVE ADVERTISEMENT SLOT (32-48px spacing below controls) -->
+<section aria-label="Advertisement Slot" class="w-full max-w-7xl mx-auto px-4 sm:px-8 mt-10 mb-14 sm:mb-16">
+<div class="flex flex-col items-center">
+<span class="text-[11px] tracking-wider uppercase text-zinc-500 font-medium mb-2.5">ADVERTISEMENT</span>
+<div class="w-full max-w-4xl h-[90px] md:h-[100px] lg:h-[120px] rounded-lg border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center text-zinc-500 text-xs font-mono transition-colors hover:border-white/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-zinc-600 text-base">ads_click</span>
+<span>[ Responsive Ad Space · 728x90 / 970x90 / 320x50 ]</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. ROLL DICE ONLINE INTRODUCTION -->
+<section class="w-full max-w-4xl mx-auto px-4 sm:px-8 mb-16 sm:mb-20 text-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-white/5 text-emerald-400 text-xs font-mono mb-4">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+    Physics-Powered Dice Engine
+  </div>
+<h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-5">
+    Online Dice Roller
+  </h1>
+<p class="text-base sm:text-lg text-zinc-400 leading-relaxed font-normal">
+    DiceRoll is a fast, realistic way to roll one to four six-sided dice directly in your browser. Choose how many dice you need, press Roll Dice, and watch them tumble, collide and settle naturally inside the virtual dice tray. Just like real dice, the number facing upward after each die stops determines the result. DiceRoll automatically reads those values and calculates the total for you.
+  </p>
+</section>
+<!-- 3. HOW TO ROLL DICE (4 Steps) -->
+<section class="w-full max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-20">
+<div class="mb-8 text-center sm:text-left">
+<span class="text-[11px] uppercase tracking-wider font-mono text-emerald-400 font-medium">Quick Guide</span>
+<h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">How to Roll Dice</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+<!-- Step 1 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/10 transition-colors">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center font-mono text-emerald-400 font-bold text-sm mb-4">
+          01
+        </div>
+<h3 class="text-base font-semibold text-white mb-2">1. Choose your dice</h3>
+<p class="text-sm text-zinc-400 leading-relaxed">
+          Select between one and four standard six-sided dice using the selector bar.
+        </p>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.04] text-[11px] font-mono text-zinc-500">1 to 4 D6</div>
+</div>
+<!-- Step 2 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/10 transition-colors">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center font-mono text-emerald-400 font-bold text-sm mb-4">
+          02
+        </div>
+<h3 class="text-base font-semibold text-white mb-2">2. Roll</h3>
+<p class="text-sm text-zinc-400 leading-relaxed">
+          Press ROLL DICE or tap SPACE to send the dice tumbling across the felt tray.
+        </p>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.04] text-[11px] font-mono text-zinc-500">Spacebar shortcut</div>
+</div>
+<!-- Step 3 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/10 transition-colors">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center font-mono text-emerald-400 font-bold text-sm mb-4">
+          03
+        </div>
+<h3 class="text-base font-semibold text-white mb-2">3. Let them settle</h3>
+<p class="text-sm text-zinc-400 leading-relaxed">
+          The dice bounce, rotate and interact with rigid physics until they naturally come to rest.
+        </p>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.04] text-[11px] font-mono text-zinc-500">Rigid 3D physics</div>
+</div>
+<!-- Step 4 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 sm:p-6 flex flex-col justify-between hover:border-white/10 transition-colors">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center font-mono text-emerald-400 font-bold text-sm mb-4">
+          04
+        </div>
+<h3 class="text-base font-semibold text-white mb-2">4. Read your result</h3>
+<p class="text-sm text-zinc-400 leading-relaxed">
+          The upward-facing side of each die determines its value. DiceRoll adds the values and displays the total automatically.
+        </p>
+</div>
+<div class="mt-4 pt-3 border-t border-white/[0.04] text-[11px] font-mono text-zinc-500">Instant sum</div>
+</div>
+</div>
+</section>
+<!-- 4. STANDARD D6 DICE & DICE PROBABILITY -->
+<section class="w-full max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: How a Six-Sided Die Works -->
+<div class="lg:col-span-5 bg-surface-container-low border border-white/5 rounded-2xl p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-emerald-400 text-xl">view_in_ar</span>
+<h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">How a Six-Sided Die Works</h2>
+</div>
+<p class="text-sm sm:text-base text-zinc-400 leading-relaxed mb-6">
+        A standard six-sided die (often abbreviated as D6) has six numbered faces marked from 1 to 6. A classic rule of authentic cubical dice geometry is:
+      </p>
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-emerald-500/20 mb-6">
+<p class="text-xs sm:text-sm text-emerald-300 font-medium">
+          "Opposite faces on a standard six-sided die add up to seven."
+        </p>
+</div>
+<!-- Visual Pairs -->
+<div class="space-y-2.5">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest border border-white/[0.04]">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">1</span>
+<span class="text-zinc-500 text-xs">↔</span>
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">6</span>
+</div>
+<span class="font-mono text-xs text-zinc-400">1 + 6 = <span class="text-emerald-400 font-semibold">7</span></span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest border border-white/[0.04]">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">2</span>
+<span class="text-zinc-500 text-xs">↔</span>
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">5</span>
+</div>
+<span class="font-mono text-xs text-zinc-400">2 + 5 = <span class="text-emerald-400 font-semibold">7</span></span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest border border-white/[0.04]">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">3</span>
+<span class="text-zinc-500 text-xs">↔</span>
+<span class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center font-mono font-bold text-white text-sm">4</span>
+</div>
+<span class="font-mono text-xs text-zinc-400">3 + 4 = <span class="text-emerald-400 font-semibold">7</span></span>
+</div>
+</div>
+</div>
+<!-- Right Column: Dice Probability & Minimal Bar Distribution -->
+<div class="lg:col-span-7 bg-surface-container-low border border-white/5 rounded-2xl p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-emerald-400 text-xl">bar_chart</span>
+<h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Dice Probability</h2>
+</div>
+<p class="text-sm sm:text-base text-zinc-400 leading-relaxed mb-6">
+        For a fair D6, each face has exactly a <span class="text-white font-medium">1 in 6 (~16.67%)</span> chance. When rolling two dice together, totals range from 2 to 12. Because multiple combinations can produce middle numbers, <span class="text-emerald-400 font-medium">7 is the single most common total</span> with 6 out of 36 combinations (16.67%).
+      </p>
+<!-- Distribution Chart Container -->
+<div class="p-4 sm:p-5 rounded-xl bg-surface-container-lowest border border-white/[0.04]">
+<div class="flex items-center justify-between mb-4">
+<span class="text-xs font-mono uppercase text-zinc-400">Two-Dice Outcome Distribution (2 - 12)</span>
+<span class="text-[11px] font-mono text-emerald-400">Peak: 7 (16.67%)</span>
+</div>
+<!-- Bar Graph -->
+<div class="grid grid-cols-11 gap-1.5 sm:gap-2 items-end h-40 pt-4 border-b border-white/[0.08] pb-1">
+<!-- 2: 1/36 = 2.78% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">1/36</span>
+<div class="w-full bg-emerald-500/20 rounded-t border-t border-x border-emerald-500/30 group-hover:bg-emerald-500/35 transition-all" style="height: 16.6%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">2</span>
+</div>
+<!-- 3: 2/36 = 5.56% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">2/36</span>
+<div class="w-full bg-emerald-500/25 rounded-t border-t border-x border-emerald-500/35 group-hover:bg-emerald-500/40 transition-all" style="height: 33.3%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">3</span>
+</div>
+<!-- 4: 3/36 = 8.33% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">3/36</span>
+<div class="w-full bg-emerald-500/30 rounded-t border-t border-x border-emerald-500/40 group-hover:bg-emerald-500/45 transition-all" style="height: 50%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">4</span>
+</div>
+<!-- 5: 4/36 = 11.11% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">4/36</span>
+<div class="w-full bg-emerald-500/40 rounded-t border-t border-x border-emerald-500/50 group-hover:bg-emerald-500/55 transition-all" style="height: 66.6%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">5</span>
+</div>
+<!-- 6: 5/36 = 13.89% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">5/36</span>
+<div class="w-full bg-emerald-500/50 rounded-t border-t border-x border-emerald-500/60 group-hover:bg-emerald-500/65 transition-all" style="height: 83.3%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">6</span>
+</div>
+<!-- 7: 6/36 = 16.67% PEAK -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-emerald-400 opacity-100 font-bold mb-1">6/36</span>
+<div class="w-full bg-emerald-400 rounded-t shadow-[0_0_12px_rgba(52,211,153,0.4)]" style="height: 100%;"></div>
+<span class="text-xs font-mono text-emerald-400 mt-2 font-bold">7</span>
+</div>
+<!-- 8: 5/36 = 13.89% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">5/36</span>
+<div class="w-full bg-emerald-500/50 rounded-t border-t border-x border-emerald-500/60 group-hover:bg-emerald-500/65 transition-all" style="height: 83.3%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">8</span>
+</div>
+<!-- 9: 4/36 = 11.11% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">4/36</span>
+<div class="w-full bg-emerald-500/40 rounded-t border-t border-x border-emerald-500/50 group-hover:bg-emerald-500/55 transition-all" style="height: 66.6%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">9</span>
+</div>
+<!-- 10: 3/36 = 8.33% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">3/36</span>
+<div class="w-full bg-emerald-500/30 rounded-t border-t border-x border-emerald-500/40 group-hover:bg-emerald-500/45 transition-all" style="height: 50%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">10</span>
+</div>
+<!-- 11: 2/36 = 5.56% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">2/36</span>
+<div class="w-full bg-emerald-500/25 rounded-t border-t border-x border-emerald-500/35 group-hover:bg-emerald-500/40 transition-all" style="height: 33.3%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">11</span>
+</div>
+<!-- 12: 1/36 = 2.78% -->
+<div class="flex flex-col items-center h-full justify-end group">
+<span class="text-[9px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1">1/36</span>
+<div class="w-full bg-emerald-500/20 rounded-t border-t border-x border-emerald-500/30 group-hover:bg-emerald-500/35 transition-all" style="height: 16.6%;"></div>
+<span class="text-xs font-mono text-zinc-400 mt-2 font-medium">12</span>
+</div>
+</div>
+<p class="text-[11px] text-zinc-500 mt-3 font-normal text-center sm:text-left">
+          Hover over bars to view exact combination counts (36 total combinations).
+        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. SECOND RESPONSIVE ADVERTISEMENT SLOT -->
+<section aria-label="Advertisement Slot" class="w-full max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-20">
+<div class="flex flex-col items-center">
+<span class="text-[11px] tracking-wider uppercase text-zinc-500 font-medium mb-2.5">ADVERTISEMENT</span>
+<div class="w-full max-w-4xl h-[90px] md:h-[100px] lg:h-[120px] rounded-lg border border-dashed border-white/10 bg-white/[0.02] flex flex-col items-center justify-center text-zinc-500 text-xs font-mono transition-colors hover:border-white/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-zinc-600 text-base">ads_click</span>
+<span>[ Responsive Ad Space · 728x90 / 970x90 / 320x50 ]</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. COMMON USES -->
+<section class="w-full max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-20">
+<div class="mb-8 text-center sm:text-left">
+<span class="text-[11px] uppercase tracking-wider font-mono text-emerald-400 font-medium">Versatile Applications</span>
+<h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">What Can I Use DiceRoll For?</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- Use 1 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 hover:border-white/10 transition-colors flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-primary mb-3.5">
+<span class="material-symbols-outlined text-[20px]">sports_esports</span>
+</div>
+<h3 class="text-sm font-semibold text-white mb-1.5">Board Games</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          Roll dice when physical dice are unavailable, lost under furniture, or missing from your game box.
+        </p>
+</div>
+</div>
+<!-- Use 2 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 hover:border-white/10 transition-colors flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-primary mb-3.5">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<h3 class="text-sm font-semibold text-white mb-1.5">Classroom Activities</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          Random dice results for math exercises, probability lessons, statistics demos, and educational games.
+        </p>
+</div>
+</div>
+<!-- Use 3 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 hover:border-white/10 transition-colors flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-primary mb-3.5">
+<span class="material-symbols-outlined text-[20px]">balance</span>
+</div>
+<h3 class="text-sm font-semibold text-white mb-1.5">Decision Making</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          A simple, unbiased random choice between options when teams or players are deadlocked.
+        </p>
+</div>
+</div>
+<!-- Use 4 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 hover:border-white/10 transition-colors flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-primary mb-3.5">
+<span class="material-symbols-outlined text-[20px]">swords</span>
+</div>
+<h3 class="text-sm font-semibold text-white mb-1.5">Tabletop Games</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          Fast D6 rolls for RPG sessions, miniature war-gaming, and tabletop combat skirmishes.
+        </p>
+</div>
+</div>
+<!-- Use 5 -->
+<div class="border border-white/5 bg-white/[0.02] rounded-xl p-5 hover:border-white/10 transition-colors flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-primary mb-3.5">
+<span class="material-symbols-outlined text-[20px]">query_stats</span>
+</div>
+<h3 class="text-sm font-semibold text-white mb-1.5">Probability Experiments</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          Run repeated rolls to explore the law of large numbers, variance, and experimental randomness.
+        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+<section class="w-full max-w-4xl mx-auto px-4 sm:px-8 mb-20 sm:mb-24">
+<div class="mb-8 text-center sm:text-left">
+<span class="text-[11px] uppercase tracking-wider font-mono text-emerald-400 font-medium">Questions &amp; Answers</span>
+<h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">Frequently Asked Questions</h2>
+</div>
+<div class="space-y-3">
+<!-- FAQ 1 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">Are the dice results random?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        Yes. Each roll produces a new result and the physical 3D dice determine the final visible values.
+      </div>
+</details>
+<!-- FAQ 2 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">How is the dice result determined?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        After the dice finish moving, DiceRoll reads the face pointing upward on each die. Those values become the result and are added together.
+      </div>
+</details>
+<!-- FAQ 3 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">Can I roll more than one die?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        Yes. DiceRoll supports between one and four six-sided dice.
+      </div>
+</details>
+<!-- FAQ 4 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">Can I use DiceRoll on my phone?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        Yes. DiceRoll is designed for desktop, tablet and mobile devices.
+      </div>
+</details>
+<!-- FAQ 5 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">What does D6 mean?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        D6 means a six-sided die with values from 1 to 6.
+      </div>
+</details>
+<!-- FAQ 6 -->
+<details class="group bg-surface-container-low border border-white/5 rounded-xl transition-colors hover:border-white/10 overflow-hidden">
+<summary class="flex items-center justify-between p-4 sm:p-5 cursor-pointer select-none">
+<span class="font-medium text-white text-sm sm:text-base">Do opposite sides of a die add up to seven?</span>
+<span class="material-symbols-outlined text-zinc-400 group-open:rotate-180 transition-transform text-xl shrink-0 ml-3">expand_more</span>
+</summary>
+<div class="px-4 sm:px-5 pb-5 text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-3">
+        On a standard D6, yes: 1 opposite 6, 2 opposite 5, 3 opposite 4.
+      </div>
+</details>
+</div>
+</section>
+<!-- 8. COMPREHENSIVE FOOTER -->
+<footer class="w-full border-t border-white/[0.06] bg-surface-container-lowest pt-12 pb-8 shrink-0">
+<div class="max-w-7xl mx-auto px-4 sm:px-8">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/[0.04]">
+<!-- Brand & Tagline -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-lg bg-surface-container-high border border-white/[0.08] flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[15px]">casino</span>
+</div>
+<span class="font-semibold text-sm text-white tracking-tight">DiceRoll</span>
+</div>
+<p class="text-xs text-zinc-400">Roll the dice. Leave it to chance.</p>
+</div>
+<!-- Navigation & Legal Links -->
+<nav aria-label="Footer Navigation" class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-400 font-medium">
+<a class="hover:text-emerald-400 transition-colors" href="#about">About</a>
+<a class="hover:text-emerald-400 transition-colors" href="#how-it-works">How It Works</a>
+<a class="hover:text-emerald-400 transition-colors" href="#faq">FAQ</a>
+<a class="hover:text-emerald-400 transition-colors" href="#privacy">Privacy Policy</a>
+<a class="hover:text-emerald-400 transition-colors" href="#cookies">Cookie Policy</a>
+<a class="hover:text-emerald-400 transition-colors" href="#terms">Terms of Use</a>
+<a class="hover:text-emerald-400 transition-colors" href="#contact">Contact</a>
+</nav>
+</div>
+<!-- Bottom details: Status Indicator & Copyright -->
+<div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500/50"></span>
+<span>Free online dice roller</span>
+</div>
+<div>
+<p>© 2026 DiceRoll. All rights reserved.</p>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
